@@ -1,0 +1,45 @@
+#!/bin/sh
+
+OPTEE_DIR=/d1/optee_qemu
+QEMU_VIRTFS_HOST_DIR=$(pwd)
+QEMU_PSS_HOST_DIR=/tmp/qemu-data-tee
+HOSTFWD=,hostfwd=tcp::12345-:12345
+TERMINAL=xfce4-terminal
+SOC_TERM_PY=${OPTEE_DIR}/soc_term.py
+BINARIES_PATH=${OPTEE_DIR}/bin
+QEMU_SMP=2
+QEMU_EXTRA_ARGS="\
+	-object rng-random,filename=/dev/urandom,id=rng0 \
+	-device virtio-rng-pci,rng=rng0,max-bytes=1024,period=1000 \
+	-fsdev local,id=fsdev0,path=${QEMU_VIRTFS_HOST_DIR},security_model=none \
+	-device virtio-9p-device,fsdev=fsdev0,mount_tag=host \
+	-fsdev local,id=fsdev1,path=${QEMU_PSS_HOST_DIR},security_model=mapped-xattr \
+	-device virtio-9p-device,fsdev=fsdev1,mount_tag=secure \
+	-netdev user,id=vmnic${HOSTFWD} -device virtio-net-device,netdev=vmnic"
+
+launch_terminal() {
+	nc -z  127.0.0.1 $1 || \
+	${TERMINAL} 2>/dev/null -T "$2" -x ${SOC_TERM_PY} $1 &
+}
+wait_for_ports() {
+	while ! nc -z 127.0.0.1 $1 || ! nc -z 127.0.0.1 $2
+	do
+		sleep 1
+	done
+}
+
+launch_terminal 54320 "Normal World"
+launch_terminal 54321 "Secure World"
+wait_for_ports 54320 54321
+
+mkdir -p ${QEMU_PSS_HOST_DIR}
+cd ${BINARIES_PATH}
+${BINARIES_PATH}/qemu-system-arm \
+	-nographic \
+	-serial tcp:127.0.0.1:54320 -serial tcp:127.0.0.1:54321 \
+	-smp ${QEMU_SMP} \
+	-s -S -machine virt,secure=on -cpu cortex-a15 \
+	-d unimp -semihosting-config enable=on,target=native \
+	-m 1057 \
+	-bios bl1.bin \
+	${QEMU_EXTRA_ARGS}

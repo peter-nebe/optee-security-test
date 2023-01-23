@@ -1,0 +1,14 @@
+#!/bin/sh
+
+MOCK_TA=../mock-ta
+ln -fs ${MOCK_TA}/Makefile
+ln -fs ${MOCK_TA}/mock-ta.cpp
+ln -fs ${MOCK_TA}/mock-ta.h
+ln -fs ${MOCK_TA}/sub.mk
+ln -fs ${MOCK_TA}/user_ta_header_defines.h
+
+make \
+  CROSS_COMPILE=/d1/opt/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf- \
+  TA_DEV_KIT_DIR=/d1/optee_qemu/optee_os/export-ta_arm32 \
+  TA_SIGN_KEY=rsa2048.pem \
+  O=build

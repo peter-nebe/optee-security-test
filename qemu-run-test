@@ -1,0 +1,58 @@
+#!/bin/sh
+#
+# optee-security-test
+# Copyright (c) 2023 Peter Nebe <mail@peter-nebe.dev>
+#
+# This file is part of optee-security-test.
+#
+# optee-security-test is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# optee-security-test is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with optee-security-test.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+#
+# Call this from within QEMU as root to run the test.
+#
+
+TEST_APP="test-app/build/test-app"
+TA="build/8aaaf200-2450-11e4-abe2-0002a5d5c51e.ta"
+
+# Expected TEE API error code,
+# see https://github.com/OP-TEE/optee_os/blob/8e74d47616a20eaa23ca692f4bbbf917a236ed94/lib/libutee/include/tee_api_defines.h#L126
+#
+TEE_ERROR_SECURITY="0xffff000f"
+
+callTestApp() {
+  echo "call whith: $1"
+  cp -f "$1/${TA}" /lib/optee_armtz/
+
+  output=$("${TEST_APP}" 2>&1 | head -1)
+  echo "${output}"
+
+  code=$(echo "${output}" | awk '/failed with code/ {print $5}')
+  if [ "${code}" == "$2" ]; then
+    testResult="ok"
+  else
+    testResult="FAILED"
+    overallTestResult="FAILED"
+  fi
+  echo "test result: ${testResult}"
+  echo
+}
+
+overallTestResult="ok"
+
+callTestApp mock-ta
+callTestApp fake-ta "${TEE_ERROR_SECURITY}"
+callTestApp mock-ta
+
+echo "overall test result: ${overallTestResult}"

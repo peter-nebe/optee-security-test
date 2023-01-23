@@ -1,0 +1,6 @@
+#!/bin/sh
+
+make \
+  CROSS_COMPILE=/d1/opt/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf- \
+  TA_DEV_KIT_DIR=/d1/optee_qemu/optee_os/export-ta_arm32 \
+  O=build
