@@ -40,7 +40,7 @@ callTestApp() {
 
   code=$(echo "${output}" | awk '/failed with code/ {print $5}')
   if [ "${code}" == "$2" ]; then
-    testResult="ok"
+    testResult="passed"
   else
     testResult="FAILED"
     overallTestResult="FAILED"
@@ -49,7 +49,7 @@ callTestApp() {
   echo
 }
 
-overallTestResult="ok"
+overallTestResult="passed"
 
 callTestApp mock-ta
 callTestApp fake-ta "${TEE_ERROR_SECURITY}"
