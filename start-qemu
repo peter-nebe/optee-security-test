@@ -1,6 +1,6 @@
 #!/bin/sh
 
-OPTEE_DIR=/d1/optee_qemu
+OPTEE_DIR=/d1/optee/optee-qemu
 QEMU_VIRTFS_HOST_DIR=$(pwd)
 QEMU_PSS_HOST_DIR=/tmp/qemu-data-tee
 HOSTFWD=,hostfwd=tcp::12345-:12345

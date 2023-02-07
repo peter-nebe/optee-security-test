@@ -3,7 +3,7 @@ Testing the security of an OP-TEE installation
 
 ### Dependencies
 - [OP-TEE](https://github.com/OP-TEE)
-- [Cross compiler for ARM](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-arm-none-linux-gnueabihf.tar.xz)
+- [Cross compiler for ARM](https://developer.arm.com/downloads/-/gnu-a)
 
 ### Overview
 **optee-security-test** tests the behavior of an OP-TEE client when trying to run a trusted application (TA) signed with an incorrect key. The TA must not be executed in this case and the client API is expected to return a specific error.
