@@ -1,0 +1,7 @@
+#!/bin/sh -v
+
+OPTEEOS_DIR=/d1/optee/optee_os-3.20.0
+
+rm armstub8-optee.bin
+make
+cat ${OPTEEOS_DIR}/out/arm/core/tee-pager_v2.bin >> armstub8-optee.bin

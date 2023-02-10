@@ -5,6 +5,13 @@ MEMORY
 
 SECTIONS
 {
-  . = ORIGIN(RAM);
   __StackTop = ORIGIN(RAM) + LENGTH(RAM);
+  __OpteeOsEntry = ORIGIN(RAM) + 0x1000;
+  output :
+  {
+    . = ORIGIN(RAM);
+    armstub8.o
+    uart.o
+    . = __OpteeOsEntry;
+  }
 }

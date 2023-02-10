@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 enum
 {
   PERIPHERAL_BASE = 0xFE000000,
@@ -5,9 +7,6 @@ enum
   AUX_MU_IO_REG   = AUX_BASE + 64,
   AUX_MU_LSR_REG  = AUX_BASE + 84,
 };
-
-typedef unsigned int uint32_t;
-typedef long int64_t;
 
 uint32_t mmioRead(int64_t reg)
 {
@@ -26,7 +25,7 @@ uint32_t uartIsWriteCharReady()
 
 void uartWriteChar(char c)
 {
-  while (!uartIsWriteCharReady()); 
+  while (!uartIsWriteCharReady());
   mmioWrite(AUX_MU_IO_REG, c);
 }
 
@@ -38,31 +37,4 @@ void uartWriteString(char *str)
       uartWriteChar('\r');
     uartWriteChar(*str++);
   }
-}
-
-void print(char *type, uint32_t size)
-{
-  uartWriteString("sizeof ");
-  uartWriteString(type);
-  uartWriteString(": ");
-
-  uartWriteChar('0' + size);
-  uartWriteString("\n");
-}
-
-void uartWriteHello()
-{
-  uartWriteString("\nuartWriteHello:\n");
-
-  char c;
-  print("char", sizeof c);
-
-  uint32_t u;
-  print("uint32_t", sizeof u);
-
-  int64_t i;
-  print("int64_t", sizeof i);
-
-  char* p;
-  print("char*", sizeof p);
 }

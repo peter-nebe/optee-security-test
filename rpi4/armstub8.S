@@ -199,25 +199,33 @@ kernel_entry32:
 
 .org 0x100
 
-armstubHello:
+strBootOpteeOs:
+	.string "\narmstub: boot optee-os\n"
+strBootKernel:
 	.string "armstub: boot kernel\n"
 	.align 2
 
 primary_cpu:
-	ldr x1, =__StackTop
-	mov sp, x1
-	bl uartWriteHello
-	ldr x0, =armstubHello
-	bl uartWriteString
+	ldr	x1, =__StackTop
+	mov	sp, x1
 
-	ldr w4, kernel_entry32
-	ldr w0, dtb_ptr32
+	ldr	x0, =strBootOpteeOs
+	bl	uartWriteString
+	mov	x0, #0
+	mov	x1, #0
+	mov	x2, #0
+	bl	__OpteeOsEntry
+
+	ldr	x0, =strBootKernel
+	bl	uartWriteString
+	ldr	w4, kernel_entry32
+	ldr	w0, dtb_ptr32
 
 boot_kernel:
-	mov x1, #0
-	mov x2, #0
-	mov x3, #0
-	br x4
+	mov	x1, #0
+	mov	x2, #0
+	mov	x3, #0
+	br	x4
 
 #ifdef GIC
 

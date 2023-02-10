@@ -2,4 +2,4 @@ enable_uart=1
 uart_2ndstage=1
 
 arm_64bit=1
-armstub=armstub8-uart-write.bin
+armstub=armstub8-optee.bin
