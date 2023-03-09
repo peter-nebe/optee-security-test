@@ -20,11 +20,11 @@
 #
 
 #
-# Call this from within QEMU as root to run the test.
+# Call this on the Raspberry Pi or from within QEMU as root to run the test.
 #
 
-TEST_APP="test-app/build/test-app"
-TA="build/8aaaf200-2450-11e4-abe2-0002a5d5c51e.ta"
+TEST_APP="./test-app"
+TA="8aaaf200-2450-11e4-abe2-0002a5d5c51e.ta"
 
 # Expected TEE API error code,
 # see https://github.com/OP-TEE/optee_os/blob/8e74d47616a20eaa23ca692f4bbbf917a236ed94/lib/libutee/include/tee_api_defines.h#L126
