@@ -20,7 +20,7 @@
 #
 
 #
-# Call this on the Raspberry Pi or from within QEMU as root to run the test.
+# Call this on the target or from within QEMU as root to run the test.
 #
 
 TEST_APP="./test-app"
