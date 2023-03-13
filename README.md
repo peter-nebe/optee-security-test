@@ -39,11 +39,9 @@ overall test result: passed
 So far the Raspberry Pi 4 and QEMU are supported. It shouldn't be difficult to adapt the setup to more platforms supported by OP-TEE. Each platform requires a suitably built OP-TEE OS and a special bootloader. Furthermore, the OP-TEE client library and a Linux kernel with OP-TEE driver are required.
 
 #### Raspberry Pi 4
-The Raspberry Pi 4 is not yet officially supported by OP-TEE, but the RPi3 is. So I provisionally adapted the RPi3 porting to the RPi4. A few extensions were also required in the ARM Trusted Firmware. To run **optee-security-test** on the RPi4, you also need these two forks:
-- https://github.com/peter-nebe/arm-trusted-firmware
-- https://github.com/peter-nebe/optee_os, there is a build guide below
+The Raspberry Pi 4 is not yet officially supported by OP-TEE, but the RPi3 is. So I provisionally adapted the RPi3 porting to the RPi4. A few extensions were also required in the ARM Trusted Firmware. To run **optee-security-test** on the RPi4, first build the forks according to these [building instructions](https://github.com/peter-nebe/optee_os#building-instructions).
 
-The OP-TEE client lib and the Linux kernel can be built with buildroot. Once you get OP-TEE working on the RPi4, build the apps with [mk-rpi4](mk-rpi4). Call [inst-rpi](inst-rpi) to load the apps onto the RPi. On the RPi, call *run-test* as shown above.
+Once you get OP-TEE working on the RPi4, build the apps with [mk-rpi4](mk-rpi4). Call [inst-rpi](inst-rpi) to load the apps onto the RPi. On the RPi, call *run-test* as shown above.
 
 #### QEMU
 A good guide to get OP-TEE working in QEMU can be found [here](https://kickstartembedded.com/2022/11/07/op-tee-part-3-setting-up-op-tee-on-qemu-raspberry-pi-3/). Once you've done that, build the apps with [mk-qemu](mk-qemu). Call [start-qemu](start-qemu). In QEMU, call *run-test* like this:
