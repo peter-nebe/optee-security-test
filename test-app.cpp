@@ -20,34 +20,61 @@
 
 #include "mock-ta.h"
 #include "tee_client_api.h"
+#include <stdexcept>
 #include <iostream>
 using namespace std;
 
+class TeeClient
+{
+  TEEC_Context context;
+
+public:
+  TeeClient()
+  {
+    TEEC_Result res = TEEC_InitializeContext(NULL, &context);
+    if (res != TEEC_SUCCESS)
+      throw runtime_error("TEEC_InitializeContext");
+  }
+
+  ~TeeClient()
+  {
+    TEEC_FinalizeContext(&context);
+  }
+
+  bool invokeCommand(uint32_t commandId, uint32_t &value)
+  {
+    TEEC_Session session;
+    const TEEC_UUID uuid = MOCK_TA_UUID;
+    uint32_t errOrigin;
+    TEEC_Result res = TEEC_OpenSession(&context, &session, &uuid, TEEC_LOGIN_PUBLIC, NULL, NULL, &errOrigin);
+    if (res != TEEC_SUCCESS)
+    {
+      cerr << "TEEC_OpenSession failed with code 0x" << hex << res << " origin 0x" << errOrigin << endl;
+      return false;
+    }
+
+    TEEC_Operation op{};
+    op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
+    op.params[0].value.a = value;
+    res = TEEC_InvokeCommand(&session, commandId, &op, &errOrigin);
+    if (res != TEEC_SUCCESS)
+      cerr << "TEEC_InvokeCommand failed with code 0x" << hex << res << " origin 0x" << errOrigin << endl;
+
+    value = op.params[0].value.a;
+    TEEC_CloseSession(&session);
+
+    return res == TEEC_SUCCESS;
+  }
+};
+
 int main()
 {
-  TEEC_Context ctx;
-  TEEC_Result res = TEEC_InitializeContext(NULL, &ctx);
-  if (res != TEEC_SUCCESS)
-    cerr << "TEEC_InitializeContext failed with code 0x" << hex << res << endl;
+  TeeClient teeClient;
+  uint32_t value = 123;
 
-  TEEC_Session sess;
-  const TEEC_UUID uuid = MOCK_TA_UUID;
-  uint32_t err_origin;
-  res = TEEC_OpenSession(&ctx, &sess, &uuid, TEEC_LOGIN_PUBLIC, NULL, NULL, &err_origin);
-  if (res != TEEC_SUCCESS)
-    cerr << "TEEC_OpenSession failed with code 0x" << hex << res << " origin 0x" << err_origin << endl;
-
-  TEEC_Operation op{};
-  op.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE, TEEC_NONE, TEEC_NONE);
-  op.params[0].value.a = 123;
-  res = TEEC_InvokeCommand(&sess, MOCK_TA_CMD_CHANGE_VALUE, &op, &err_origin);
-  if (res != TEEC_SUCCESS)
-    cerr << "TEEC_InvokeCommand failed with code 0x" << hex << res << " origin 0x" << err_origin << endl;
-
-  cout << "value after invocation: " << op.params[0].value.a << endl;
-
-  TEEC_CloseSession(&sess);
-  TEEC_FinalizeContext(&ctx);
+  bool success = teeClient.invokeCommand(MOCK_TA_CMD_CHANGE_VALUE, value);
+  cout << "success: " << boolalpha << success;
+  cout << ", value after invocation: " << value << endl;
 
   return 0;
 }
