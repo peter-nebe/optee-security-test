@@ -26,5 +26,3 @@ make \
   TA_DEV_KIT_DIR=${OPTEEOS_DIR}/out/arm-plat-rpi4/export-ta_arm64 \
   TA_SIGN_KEY=rsa2048.pem \
   O=build/rpi4/fake-ta
-
-cd ..

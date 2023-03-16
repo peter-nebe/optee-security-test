@@ -26,5 +26,3 @@ make \
   TA_DEV_KIT_DIR=${OPTEEOS_DIR}/export-ta_arm32 \
   TA_SIGN_KEY=rsa2048.pem \
   O=build/qemu/fake-ta
-
-cd ..
